@@ -1,7 +1,10 @@
+import sys
 import meshio
 import numpy as np
 from math import fabs, sqrt
 import scipy
+import time
+import scorep
 
 from dr_solve import build_system
 
@@ -59,5 +62,11 @@ def solve_dd(*domains):
         msh[d].point_data={"u":u[d],}
         msh[d].write(domains[d]+'.xdmf')
 
-if __name__=='__main__':
-    solve_dd('d', 'r')
+
+
+if __name__ == '__main__':
+
+    t0 = time.time()
+    solve_dd('d','r')
+    t1 = time.time()
+    print(f'temps de solution :{t1-t0} secondes')

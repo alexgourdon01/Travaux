@@ -2,6 +2,7 @@ import meshio
 import numpy as np
 from math import fabs, sqrt
 import scipy
+import time
 
 class Q3pt():
     """Defined on reference triangle"""
@@ -29,18 +30,22 @@ def build_system(msh):
         elem = msh.cells_dict['triangle'][k]
         X = [msh.points[i] for i in elem]
         X0,X1,X2 = X
+        
         J = np.asarray((((X1[0]-X0[0]), (X1[1]-X0[1])),
                         ((X2[0]-X0[0]), (X2[1]-X0[1]))))
+        
         """
         detJ = 0.5*fabs(J[0,0]*J[1,1] - J[0,1]*J[1,0])
         Jinv = np.asarray((((J[1,1], -J[0,1]),
                             (-J[0,1], J[0,0]))))/detJ
         """
         det  = J[0,0]*J[1,1] - J[0,1]*J[1,0]
-        detJ = fabs(det)                              
+        detJ = fabs(det)                             
         Jinv = np.asarray((((J[1,1], -J[0,1]),
                     (-J[1,0], J[0,0]))))/det    
-        
+
+        assert np.allclose(J @ Jinv, np.eye(2))
+
         for w,p in zip(q.weights, q.points):
             xqf = p.dot(X)
             wq = detJ*w
@@ -74,6 +79,10 @@ def solve(domain):
     msh.write(domain+'.xdmf')
 
 if __name__=='__main__':
+    t0 = time.time()
     solve('dr')
+    t1 = time.time()
+    print(f'temps solveur global:{t1-t0} secondes ')
     solve('d')
     solve('r')
+    print('fini')
