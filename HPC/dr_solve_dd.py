@@ -5,8 +5,9 @@ from math import fabs, sqrt
 import scipy
 import time
 import scorep
+#from dr_solve import build_system
+from dr_solve_np import build_system_np as build_system
 
-from dr_solve import build_system
 
 def solve_dd(*domains):
     msh=[meshio.read(domain+'.msh') for domain in domains]
